@@ -1,9 +1,10 @@
 {
-  "name": "piano-tutorial-tools",
-  "version": "1.0.0",
-  "type": "module", 
-  "dependencies": {},
+  "type": "module",
   "devDependencies": {
     "typescript": "^6.0.3"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
   }
 }
