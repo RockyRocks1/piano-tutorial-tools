@@ -4,7 +4,6 @@ export enum MIDIPermissionState {
     NOT_SUPPORTED = "not_supported",
     ERROR = "error"
 }
-
 export enum MIDIMessageType {
     NOTE_OFF = 0b1000,
     NOTE_ON = 0b1001,
@@ -12,5 +11,6 @@ export enum MIDIMessageType {
     CONTROL_CHANGE = 0b1011,
     PROGRAM_CHANGE = 0b1100,
     CHANNEL_PRESSURE = 0b1101,
-    PITCH_BEND_CHANGE = 0b1110
+    PITCH_BEND_CHANGE = 0b1110,
+    SYSTEM_MESSAGE = 0b1111,
 }

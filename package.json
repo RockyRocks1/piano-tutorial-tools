@@ -1,0 +1,9 @@
+{
+  "name": "piano-tutorial-tools",
+  "version": "1.0.0",
+  "type": "module", 
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
+}
