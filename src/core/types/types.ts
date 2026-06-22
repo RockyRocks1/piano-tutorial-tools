@@ -14,3 +14,14 @@ export enum MIDIMessageType {
     PITCH_BEND_CHANGE = 0b1110,
     SYSTEM_MESSAGE = 0b1111,
 }
+
+export type MIDIMessageData = 
+    {messageType: MIDIMessageType.NOTE_OFF, keyNumber: number, velocity: number} |
+    {messageType: MIDIMessageType.NOTE_ON, keyNumber: number, velocity: number} |
+    // these ones below wont probably be used
+    {messageType: MIDIMessageType.AFTERTOUCH, keyNumber: number, pressureValue: number} |
+    {messageType: MIDIMessageType.CONTROL_CHANGE, controllerNumber: number, controllerValue: number} |
+    {messageType: MIDIMessageType.PROGRAM_CHANGE, programNumber: number} |
+    {messageType: MIDIMessageType.CHANNEL_PRESSURE, pressureValue: number} |
+    {messageType: MIDIMessageType.PITCH_BEND_CHANGE, pitchLowerByte: number, pitchHigherByte: number} |
+    {messageType: MIDIMessageType.SYSTEM_MESSAGE} 
