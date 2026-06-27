@@ -1,4 +1,4 @@
-import { MIDIMessageData, MIDIMessageType, MIDIPermissionState } from "./types/types.js";
+import { MIDIMessageData, MIDIMessageType, MIDIPermissionState } from "./types.js";
 
 export class MidiMessageMaker {
     public static fromRawData(rawData: Uint8Array, timeStamp: number): MidiMessage {

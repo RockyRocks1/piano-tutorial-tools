@@ -1,11 +1,16 @@
-import { PitchClass } from "./types/types.js";
+import { PitchClass } from "./types.js";
 import { clamp } from "../utils/math.js";
+
 // follows midi convention (middle c is 60)
 export default class Note {
+    private static readonly MIN_MIDI = 0;
+    private static readonly MAX_MIDI = 127;
+    public static readonly MIDDLE_C = 60;
+
     private noteNumber: number;
 
     constructor(noteNumber: number) {
-        this.noteNumber = clamp(noteNumber, 0, 127);
+        this.noteNumber = clamp(noteNumber, Note.MIN_MIDI, Note.MAX_MIDI);
     }
     public static fromComponents(pitch: PitchClass, octave: number): Note {
         const noteNumber = ((octave + 1) * 12) + pitch;
