@@ -1,13 +1,12 @@
 import { MIDIMessageData, MIDIMessageType, MIDIPermissionState } from "./types/types.js";
-// Version 1 (almost done)
-class MidiMessageMaker {
-    public static fromRawData(rawData: Uint8Array, timeStamp: number): MidiMessage {
 
+export class MidiMessageMaker {
+    public static fromRawData(rawData: Uint8Array, timeStamp: number): MidiMessage {
         let messageType = rawData[0] >> 4;
         let channelNumber = (rawData[0] & 0xF) + 1;
         let messageData: MIDIMessageData;
         const byte2 = rawData[1];
-        const byte3 = rawData[2] || -1;
+        const byte3 = rawData[2];
         if (messageType === MIDIMessageType.NOTE_ON && byte3 === 0)
             messageType = MIDIMessageType.NOTE_OFF;
 
