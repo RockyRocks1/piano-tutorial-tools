@@ -1,4 +1,4 @@
-import { MIDIMessageData, MIDIMessageType, MIDIPermissionState } from "./types.js";
+import { MIDIMessageData, MidiMessageListener, MIDIMessageType, MIDIPermissionState, RemoveFunction, StateChangedListener } from "./types.js";
 
 export class MidiMessageMaker {
     public static fromRawData(rawData: Uint8Array, timeStamp: number): MidiMessage {
@@ -92,7 +92,7 @@ export class MidiMessageMaker {
         return new MidiMessage(channelNumber, rawData, performance.now(), midiMessageData)
     }
 }
-class MidiMessage {
+export class MidiMessage {
     // Reference: https://midi.org/summary-of-midi-1-0-messages
     public readonly channelNumber: number;
     public readonly rawData: Uint8Array;
@@ -108,11 +108,6 @@ class MidiMessage {
     }
 }
 
-// these types cant be in types file because it would create a circular dependency
-// TODO: I could create another types file?
-type StateChangedListener = (state: MIDIPortDeviceState, connection: MIDIPortConnectionState) => void;
-type MidiMessageListener = (message: MidiMessage) => void;
-type RemoveFunction = () => void;
 class MidiInputDevice {
     private midiInput: MIDIInput;
     private stateChangedListeners: StateChangedListener[];
@@ -174,7 +169,6 @@ class MidiInputDevice {
     }
 }
 class MidiOutputDevice {
-    // this def not gonna get used
     private midiOutput: MIDIOutput;
     private stateChangedListeners: StateChangedListener[];
     private boundStateChanged: (event: MIDIConnectionEvent) => void;

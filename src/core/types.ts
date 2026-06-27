@@ -1,3 +1,4 @@
+import type { MidiMessage } from "./midi.js"
 export enum MIDIPermissionState {
     GRANTED = "granted",
     DENIED = "denied",
@@ -24,6 +25,10 @@ export type MIDIMessageData =
     {messageType: MIDIMessageType.CHANNEL_PRESSURE, pressureValue: number} |
     {messageType: MIDIMessageType.PITCH_BEND_CHANGE, pitchLowerByte: number, pitchHigherByte: number} |
     {messageType: MIDIMessageType.SYSTEM_MESSAGE};
+
+export type StateChangedListener = (state: MIDIPortDeviceState, connection: MIDIPortConnectionState) => void;
+export type MidiMessageListener = (message: MidiMessage) => void;
+export type RemoveFunction = () => void;
 
 export enum PitchClass {
     C = 0,
