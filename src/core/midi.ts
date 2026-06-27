@@ -1,5 +1,5 @@
 import { MIDIMessageData, MidiMessageListener, MIDIMessageType, MIDIPermissionState, RemoveFunction, StateChangedListener } from "./types.js";
-
+// TODO: Maybe i should separate the midimessage class from this file that stores midiservice
 export class MidiMessageMaker {
     public static fromRawData(rawData: Uint8Array, timeStamp: number): MidiMessage {
         let messageType = rawData[0] >> 4;
@@ -97,7 +97,6 @@ export class MidiMessage {
     public readonly channelNumber: number;
     public readonly rawData: Uint8Array;
     public readonly timeStamp: number;
-
     public readonly data: MIDIMessageData;
     
     constructor(channelNumber: number, rawData: Uint8Array, timeStamp: number, data: MIDIMessageData) {

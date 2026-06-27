@@ -44,3 +44,7 @@ export enum PitchClass {
     A_SHARP = 10,
     B = 11,
 }
+export type ActiveKeyInfo =  {
+    velocity: number
+    startTime: number // a timestamp
+}
