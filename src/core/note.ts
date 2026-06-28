@@ -1,7 +1,7 @@
 import { PitchClass } from "./types.js";
 import { clamp } from "../utils/math.js";
 
-// follows midi convention (middle c is 60)
+const ACCIDENTALS = [PitchClass.C_SHARP, PitchClass.D_SHARP, PitchClass.F_SHARP, PitchClass.G_SHARP, PitchClass.A_SHARP];
 export default class Note {
     private static readonly MIN_MIDI = 0;
     private static readonly MAX_MIDI = 127;
@@ -24,5 +24,8 @@ export default class Note {
     }
     public get octave(): number {
         return Math.floor(this.noteNumber / 12) - 1;
+    }
+    public get isAccidental(): boolean {
+        return ACCIDENTALS.includes(this.pitch)
     }
 }
