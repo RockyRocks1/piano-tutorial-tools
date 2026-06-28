@@ -1,4 +1,4 @@
-import type { MidiMessage } from "./midi.js"
+import type { MidiMessage, MidiInputDevice, MidiOutputDevice } from "./midi.js"
 export enum MIDIPermissionState {
     GRANTED = "granted",
     DENIED = "denied",
@@ -28,6 +28,7 @@ export type MIDIMessageData =
 
 export type StateChangedListener = (state: MIDIPortDeviceState, connection: MIDIPortConnectionState) => void;
 export type MidiMessageListener = (message: MidiMessage) => void;
+export type AccessStateChangedListener = (state: "deviceadded" | "deviceremoved", device: MidiInputDevice | MidiOutputDevice) => void;
 export type RemoveFunction = () => void;
 
 export enum PitchClass {

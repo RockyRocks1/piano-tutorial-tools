@@ -1,4 +1,4 @@
-import { MIDIMessageData, MidiMessageListener, MIDIMessageType, MIDIPermissionState, RemoveFunction, StateChangedListener } from "./types.js";
+import { AccessStateChangedListener, MIDIMessageData, MidiMessageListener, MIDIMessageType, MIDIPermissionState, RemoveFunction, StateChangedListener } from "./types.js";
 // TODO: Maybe i should separate the midimessage class from this file that stores midiservice
 export class MidiMessageMaker {
     public static fromRawData(rawData: Uint8Array, timeStamp: number): MidiMessage {
@@ -107,7 +107,7 @@ export class MidiMessage {
     }
 }
 
-class MidiInputDevice {
+export class MidiInputDevice {
     private midiInput: MIDIInput;
     private stateChangedListeners: StateChangedListener[];
     private midiMessageListeners: MidiMessageListener[];
@@ -125,8 +125,11 @@ class MidiInputDevice {
     public get name(): string | null {
         return this.midiInput.name;
     }
-    public get id(): string | null {
+    public get id(): string {
         return this.midiInput.id;
+    }
+    public get deviceType(): "input" {
+        return "input";
     }
     public cleanup() {
         this.midiInput.removeEventListener("statechange", this.boundStateChanged);
@@ -167,7 +170,8 @@ class MidiInputDevice {
             listener(message);
     }
 }
-class MidiOutputDevice {
+export class MidiOutputDevice {
+    private isInitialized: boolean = false;
     private midiOutput: MIDIOutput;
     private stateChangedListeners: StateChangedListener[];
     private boundStateChanged: (event: MIDIConnectionEvent) => void;
@@ -181,8 +185,11 @@ class MidiOutputDevice {
     public get name(): string | null {
         return this.midiOutput.name;
     }
-    public get id(): string | null {
+    public get id(): string {
         return this.midiOutput.id;
+    }
+    public get deviceType(): "output" {
+        return "output";
     }
     public sendMidiMessage(midiMessage: MidiMessage) {
         this.midiOutput.send(midiMessage.rawData)
@@ -215,11 +222,13 @@ class MidiService {
     private midiAccess?: MIDIAccess;
     private midiInputs: Map<string, MidiInputDevice>;
     private midiOutputs: Map<string, MidiOutputDevice>;
+    private accessStateChangedListeners: AccessStateChangedListener[];
     private boundStateChanged: (event: MIDIConnectionEvent) => void;
 
     constructor() {
         this.midiInputs = new Map<string, MidiInputDevice>();
         this.midiOutputs = new Map<string, MidiOutputDevice>();
+        this.accessStateChangedListeners = [];
         this.boundStateChanged = this.handleAccessStateChangeEvent.bind(this);
     }
     public async initialize(): Promise<MIDIPermissionState> {
@@ -263,6 +272,12 @@ class MidiService {
             }
         }
     }
+    public onAccessStateChangedEvent(listener: AccessStateChangedListener): RemoveFunction {
+        this.accessStateChangedListeners.push(listener);
+        return () => {
+            this.accessStateChangedListeners = this.accessStateChangedListeners.filter((listenerElement: AccessStateChangedListener) => listenerElement !== listener);
+        }
+    }
     private initializePorts(): boolean {
         if (!this.midiAccess)
             return false;
@@ -280,11 +295,10 @@ class MidiService {
         }
         return true;
     }
-    private initializeListeners(): boolean {
+    private initializeListeners() {
         if (!this.midiAccess)
-            return false;
+            return;
         this.midiAccess.addEventListener("statechange", this.boundStateChanged);
-        return true;
     }
     private handleAccessStateChangeEvent(event: MIDIConnectionEvent) {
         const port = event.port;
@@ -295,21 +309,24 @@ class MidiService {
         const portInitialized = midiMap.has(port.id);
 
         if (port.state === "connected" && !portInitialized) {
-            const midiDevice = (portType === "input") ? new MidiInputDevice(port as MIDIInput) : new MidiOutputDevice(port as MIDIOutput)
+            const midiDevice = (portType === "input") ? new MidiInputDevice(port as MIDIInput) : new MidiOutputDevice(port as MIDIOutput);
             midiMap.set(port.id, midiDevice as any);
-            if (port.connection !== "open")
-                port.open();
+            for (const listener of this.accessStateChangedListeners)
+                listener("deviceadded", midiDevice);
+            
         } else if (port.state === "disconnected" && portInitialized) {
-            let midiInputDevice = midiMap.get(port.id) as MidiInputDevice | MidiOutputDevice;
-            midiInputDevice.cleanup();
+            const midiDevice = midiMap.get(port.id) as MidiInputDevice | MidiOutputDevice;
+            midiDevice.cleanup();
             midiMap.delete(port.id);
+           for (const listener of this.accessStateChangedListeners)
+                listener("deviceremoved", midiDevice);
         }
     }
     public get inputs(): MidiInputDevice[] {
-        return Array.from(this.midiInputs.values())
+        return Array.from(this.midiInputs.values());
     }
     public get outputs(): MidiOutputDevice[] {
-        return Array.from(this.midiOutputs.values())
+        return Array.from(this.midiOutputs.values());
     }
 }
 

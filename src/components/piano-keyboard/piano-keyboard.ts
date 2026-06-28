@@ -43,6 +43,7 @@ export class PianoKeyboard extends HTMLElement {
         for (const note of notes) {
             const keyButton = document.createElement("button");
             keyButton.classList.add("piano-key");
+            keyButton.setAttribute("key-number", note.midiNumber.toString());
             if (note.isAccidental) {
                 keyButton.classList.add("black-key");
                 const leftPercent = (whiteKeyIndex / whiteKeyCount) * 100;
